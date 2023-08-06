@@ -1,3 +1,15 @@
+/**
+ * @file classifier.cpp
+ * @brief Implementation of the Classifier base class and its derived classes.
+ *
+ * This file provides the implementation of the abstract base class `Classifier` and its derived classes.
+ * The `Classifier` base class defines the core interface for machine learning classifiers, including methods for training,
+ * prediction, and evaluation. Derived classes can extend this base class to implement specific classification algorithms.
+ * 
+ * @author Ahmad Mahmoud Al-qaisi
+ * @date August 6, 2023
+ */
+
 #include "dataset.cpp"
 
 /**
@@ -26,6 +38,7 @@ protected:
      * @param trainingData The dataset used for training.
      */
     virtual void train(const Dataset &trainingData) = 0;
+
 public:
     /**
      * @brief Predict the class label for a given sample.
@@ -42,6 +55,7 @@ public:
      * @return A performance metric indicating the classifier's accuracy or other measure.
      */
     virtual double evaluate(const Dataset &testData) = 0;
+
     /**
      * @brief Virtual destructor.
      *
