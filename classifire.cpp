@@ -54,7 +54,7 @@ public:
      * @param testData The dataset used for evaluation.
      * @return A performance metric indicating the classifier's accuracy or other measure.
      */
-    virtual double evaluate(const Dataset &testData) = 0;
+    virtual double evaluate(Dataset &testData) = 0;
 
     /**
      * @brief Virtual destructor.
