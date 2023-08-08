@@ -10,8 +10,11 @@
  * @date August 6, 2023
  */
 
+
+
 #include "classifire.cpp"
 #include <iostream>
+#include <numeric>
 
 using namespace std;
 
@@ -63,21 +66,21 @@ public:
                              { return a.second > b.second; }))
             .first;
     }
-
     /**
-     * @brief Evaluates the performance of the KNN classifier on a test dataset.
+     * @brief Evaluate the classifier's performance on a test dataset, return the confusion matrix,
+     * and print a classification report including micro-accuracy, micro-recall, and micro-precision.
      *
-     * @param testData The test dataset on which to evaluate the classifier.
-     * @return The evaluation result.
+     * @param testData The dataset used for evaluation.
+     * @return A confusion matrix containing counts of actual and predicted labels for each class.
      */
-    double evaluate(Dataset &testData) override
+    unordered_map<Dataset::DataType, unordered_map<Dataset::DataType, int>> evaluate(Dataset &testData) override
     {
         unordered_map<Dataset::DataType, unordered_map<Dataset::DataType, int>> confusion_matrix;
-        
+
         int l = 0;
         for (size_t i = 0; i < dataset.get_attributes().size(); i++)
         {
-            if(dataset.get_attributes()[i] == dataset.get_label())
+            if (dataset.get_attributes()[i] == dataset.get_label())
             {
                 l = i;
                 break;
@@ -90,8 +93,37 @@ public:
             auto _predicted = predict(testData.iterrow(i));
             ++confusion_matrix[_actual][_predicted];
         }
-        
-        return 0.0;
+        unordered_map<string, vector<double>> confusion_matrix_elements;
+
+        double TN = 0.0;
+        for (auto &&i : confusion_matrix)
+        {
+            for (auto &&j : i.second)
+            {
+                if (i.first == j.first)
+                {
+                    confusion_matrix_elements["TP"].push_back(j.second);
+                    TN += j.second;
+                }
+                else
+                {
+                    confusion_matrix_elements["FN"].push_back(j.second);
+                    confusion_matrix_elements["FP"].push_back(j.second);
+                }
+                TN += j.second;
+            }
+        }
+
+        double TP = accumulate(confusion_matrix_elements["TP"].begin(), confusion_matrix_elements["TP"].end(), 0.0),
+               FN = accumulate(confusion_matrix_elements["FN"].begin(), confusion_matrix_elements["FN"].end(), 0.0),
+               FP = accumulate(confusion_matrix_elements["FP"].begin(), confusion_matrix_elements["FP"].end(), 0.0);
+
+        cout << "\nModel Micro-Precision : " << (int)round((TP / (TP + FP)) * 100) << "%"
+             << "\nModel Micro-Recall    : " << (int)round((TP / (TP + FN)) * 100) << "%"
+             << "\nModel Micro-Accuracy  : " << (int)round(((TP + TN) / (TP + TN + FP + FN)) * 100) << "%\n"
+             << endl;
+
+        return confusion_matrix;
     }
 
     /**
@@ -158,7 +190,7 @@ public:
 
         for (size_t i = 0; i < dataset.no_rows(); i++)
         {
-            if(i == 147)
+            if (i == 147)
             {
                 cout << "";
             }
@@ -197,28 +229,28 @@ private:
     unsigned int _k;                                                                                               /**< The number of nearest neighbors to consider. */
     double (*_proximity_measure)(Dataset *, const vector<Dataset::DataType> &, const vector<Dataset::DataType> &); /**< The proximity measure function. */
     Dataset dataset;                                                                                               /**< The dataset used for classification. */
-
+    /**
+     * @brief Train the classifier using the provided training data.
+     *
+     * @param trainingData The dataset used for training.
+     */
     void train(const Dataset &trainingData) override
     {
     }
+    /**
+     * @brief Save the trained model to a file.
+     *
+     * @param filePath The path to the file where the model will be saved.
+     */
     void saveModel(const std::string &filePath) override
     {
     }
+    /**
+     * @brief Load a previously trained model from a file.
+     *
+     * @param filePath The path to the file containing the saved model.
+     */
     void loadModel(const std::string &filePath) override
     {
     }
 };
-
-int main()
-{
-    Dataset testing_dataset = Dataset::read_csv("./data/iris_testing.csv");
-    KNN knn("./data/iris_training.csv", "species", 5);
-    
-    knn.evaluate(testing_dataset);
-}
-
-/*
-5.9,3,5.1,1.8,Iris-virginica
-5.8,2.7,4.1,1,Iris-versicolor
-4.6,3.1,1.5,0.2,Iris-setosa
-*/

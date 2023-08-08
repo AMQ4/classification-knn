@@ -5,7 +5,7 @@
  * This file provides the implementation of the abstract base class `Classifier` and its derived classes.
  * The `Classifier` base class defines the core interface for machine learning classifiers, including methods for training,
  * prediction, and evaluation. Derived classes can extend this base class to implement specific classification algorithms.
- * 
+ *
  * @author Ahmad Mahmoud Al-qaisi
  * @date August 6, 2023
  */
@@ -49,12 +49,13 @@ public:
     virtual Dataset::DataType predict(const vector<Dataset::DataType> &sample) = 0;
 
     /**
-     * @brief Evaluate the classifier's performance on a test dataset.
+     * @brief Evaluate the classifier's performance on a test dataset, return the confusion matrix,
+     * and print a classification report including micro-accuracy, micro-recall, and micro-precision.
      *
      * @param testData The dataset used for evaluation.
-     * @return A performance metric indicating the classifier's accuracy or other measure.
+     * @return A confusion matrix containing counts of actual and predicted labels for each class.
      */
-    virtual double evaluate(Dataset &testData) = 0;
+    virtual unordered_map<Dataset::DataType, unordered_map<Dataset::DataType, int>> evaluate(Dataset &testData) = 0;
 
     /**
      * @brief Virtual destructor.
