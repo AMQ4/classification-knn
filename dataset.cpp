@@ -550,3 +550,24 @@ ostream &operator<<(ostream &out, const Dataset::DataType &a)
     }
     return out;
 }
+
+bool operator==(const Dataset::DataType &a, const Dataset::DataType &b)
+{
+    if (holds_alternative<double>(a) and holds_alternative<double>(b))
+    {
+        return get<double>(a) == get<double>(b);
+    }
+    else
+    {
+        if (holds_alternative<string>(a) and holds_alternative<string>(b))
+        {
+            return get<string>(a) == get<string>(b);
+        }
+    }
+    return false;
+}
+
+bool operator!=(const Dataset::DataType &a, const Dataset::DataType &b)
+{
+    return not (a == b);
+}
