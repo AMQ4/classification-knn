@@ -7,10 +7,7 @@
  * The class utilizes the `Dataset` class to manage and manipulate data and defines its own proximity measure function.
  *
  * @author Ahmad Mahmoud Al-qaisi
- * @date August 6, 2023
  */
-
-
 
 #include "classifire.cpp"
 #include <iostream>
@@ -18,6 +15,43 @@
 
 using namespace std;
 
+auto euclidean_distance_mesure = [](Dataset *self, const vector<Dataset::DataType> &_a, const vector<Dataset::DataType> &_b)
+{
+                auto a = _a, b = _b;
+
+                if(a.size() < b.size())
+                {
+                    swap(a, b);
+                }
+
+                double sum = 0.0;
+                auto keys = self->get_attributes();
+                int l = 0;
+
+                for (size_t i = 0; i < keys.size(); i++)
+                {
+                    if(keys[i] == self->get_label())
+                    {
+                        l = i;
+                        break;
+                    }
+                }
+                
+                for (size_t i = 0; i < b.size(); i++)
+                {   
+                    if(holds_alternative<double>(b[i]))
+                    {
+                        // numerical
+                        sum += pow(get<double>(a[(i >= l and a.size() != b.size())? i+1 :i]) - get<double>(b[i]), 2);
+                    }
+                    else
+                    {
+                        // categorical
+                        sum += (int)(get<string>(a[(i >= l and a.size() != b.size())? i+1 :i]) == get<string>(b[i]));
+                    }
+                }
+                
+                return sqrt(sum); };
 /**
  * @brief A class representing the K-Nearest Neighbors (KNN) classifier.
  *
@@ -136,29 +170,7 @@ public:
      */
     KNN(
         const string &path, const string &label, int k = 1,
-        double (*proximity_measure)(Dataset *, const vector<Dataset::DataType> &, const vector<Dataset::DataType> &) = [](Dataset *self, const vector<Dataset::DataType> &a, const vector<Dataset::DataType> &b)
-        {
-                double sum = 0.0;
-                auto keys = self->get_attributes();
-                
-                for (size_t i = 0; i < keys.size(); i++)
-                {
-                    if(keys[i] != self->get_label())
-                    {
-                    if(holds_alternative<double>(a[i]))
-                    {
-                        // numerical
-                        sum += pow(get<double>(a[i]) - get<double>(b[i]), 2);
-                    }
-                    else
-                    {
-                        // categorical
-                        sum += (int)(get<string>(a[i]) == get<string>(b[i]));
-                    }
-                    }
-                }
-                
-                return sqrt(sum); })
+        double (*proximity_measure)(Dataset *, const vector<Dataset::DataType> &, const vector<Dataset::DataType> &) = euclidean_distance_mesure)
     {
         _proximity_measure = proximity_measure;
         _k = k;
@@ -167,11 +179,51 @@ public:
         dataset.set_label(label);
     }
     /**
-     * @brief Finds the first k nearest neighbors of a target using the provided comparison function.
+     * @brief Construct a KNN classifier using the specified training dataset and parameters.
      *
-     * @param target The target data for which to find nearest neighbors.
-     * @param comparison_fn The comparison function to determine proximity (default is less-than comparison).
-     * @return A vector of indices, distances pair corresponding to the first k nearest neighbors.
+     * This constructor initializes a KNN classifier using the provided training dataset and specified parameters.
+     * The KNN classifier uses a proximity measure to determine the similarity between data points.
+     *
+     * @param train_dataset The training dataset used to train the KNN classifier.
+     * @param k The number of nearest neighbors to consider (default is 1).
+     * @param proximity_measure A pointer to the proximity measure function used to calculate distances between data points
+     * (default is euclidean_distance_mesure).
+     *
+     * @note The proximity_measure function should take a Dataset pointer, two vectors of Dataset::DataType values representing
+     * two data points, and return a distance measure.
+     */
+    KNN(const Dataset &train_dataset, int k = 1, double (*proximity_measure)(Dataset *, const vector<Dataset::DataType> &, const vector<Dataset::DataType> &) = euclidean_distance_mesure)
+    {
+        _proximity_measure = proximity_measure;
+        dataset = move(train_dataset);
+        _k = k;
+        dataset.normalize();
+        dataset.set_label(dataset.get_label());
+    }
+
+    /**
+     * @brief Set the proximity measure function for the KNN classifier.
+     *
+     * This function sets the proximity measure function used by the KNN classifier to calculate distances between data points.
+     * The proximity measure function should take a Dataset pointer and two vectors of Dataset::DataType values representing
+     * two data points, and it should return a distance measure.
+     *
+     * @param proximity_measure A pointer to the proximity measure function.
+     */
+    void set_proximity_measure(double (*proximity_measure)(Dataset *, const vector<Dataset::DataType> &, const vector<Dataset::DataType> &))
+    {
+        _proximity_measure = proximity_measure;
+    }
+    /**
+     * @brief Perform k-nearest neighbor search using the first k nearest neighbors.
+     *
+     * This function finds the k nearest neighbors based on the specified proximity measure.
+     * The comparison function determines the sorting order for nearest neighbors.
+     * For distance-based measures, use the default comparison. For similarity, adjust the comparison accordingly.
+     *
+     * @param target The target data point for neighbor search.
+     * @param comparison_fn A comparison function for sorting neighbors.
+     * @return Vector of pairs: proximity measure(distance or similarity) and data point index.
      */
     vector<pair<double, int>> first_knn(
         const vector<Dataset::DataType> &target, bool (*comparison_fn)(double, double) = [](double a, double b)
@@ -190,10 +242,6 @@ public:
 
         for (size_t i = 0; i < dataset.no_rows(); i++)
         {
-            if (i == 147)
-            {
-                cout << "";
-            }
             auto _ = dataset.iterrow(i);
             proxi_measure_res.push_back(make_pair(_proximity_measure(&dataset, _, _target), i));
         }

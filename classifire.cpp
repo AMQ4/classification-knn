@@ -7,7 +7,6 @@
  * prediction, and evaluation. Derived classes can extend this base class to implement specific classification algorithms.
  *
  * @author Ahmad Mahmoud Al-qaisi
- * @date August 6, 2023
  */
 
 #include "dataset.cpp"
