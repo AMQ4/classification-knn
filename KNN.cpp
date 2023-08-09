@@ -24,6 +24,7 @@ double euclidean_distance_mesure(Dataset *self, const vector<Dataset::DataType> 
 
     for (size_t i = 0; i < b.size(); i++)
     {
+        if(i == l) continue;
         if (holds_alternative<double>(b[i]))
         {
             // numerical
