@@ -19,6 +19,7 @@
 #include <regex>
 #include <algorithm>
 #include <numeric>
+#include "prettytable.cpp"
 
 using namespace std;
 
@@ -209,44 +210,28 @@ public:
      */
     void print()
     {
-        int norecords = 1;
-        for (size_t i = 0; i < keys.size() - 1; i++)
-        {
-            cout << keys[i] << ", ";
-        }
-        cout << keys.back() << "\n";
-        int len = m[keys.front()].size();
+        PrettyTable tabel(get_attributes());
 
-        for (size_t i = 0; i < len; ++i, ++norecords)
+        for (size_t i = 0; i < _size; ++i)
         {
-            for (size_t j = 0; j < m.size(); j++)
+            auto row = iterrow(i);
+            vector<string> table_row;
+            for (auto &&j : row)
             {
-                if (holds_alternative<double>(m[keys[j]][i]))
+                if(holds_alternative<double>(j))
                 {
-                    if (j == m.size() - 1)
-                    {
-                        cout << get<double>(m[keys[j]][i]) << endl;
-                    }
-                    else
-                    {
-                        cout << get<double>(m[keys[j]][i]) << ", ";
-                    }
+                    table_row.push_back(to_string(get<double>(j)));
                 }
                 else
                 {
-                    if (j == m.size() - 1)
-                    {
-                        cout << get<string>(m[keys[j]][i]) << endl;
-                    }
-                    else
-                    {
-                        cout << get<string>(m[keys[j]][i]) << ", ";
-                    }
+                    table_row.push_back(get<string>(j));
                 }
             }
+            tabel.add_row(table_row);
         }
 
-        cout << "\n\nTotal printed records: " << norecords << "\n";
+        tabel.display();
+        cout << "\n\nTotal printed records: " << _size << "\n";
     }
     /**
      * @brief Creates a scatter plot using Gnuplot.
