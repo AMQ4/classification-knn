@@ -1,3 +1,5 @@
+#ifndef H_CLASSIFIRE
+#define H_CLASSIFIRE
 /**
  * @file classifier.cpp
  * @brief Implementation of the Classifier base class and its derived classes.
@@ -9,7 +11,7 @@
  * @author Ahmad Mahmoud Al-qaisi
  */
 
-#include "dataset.cpp"
+#include "dataset.h"
 
 /**
  * @brief Abstract base class for machine learning classifiers.
@@ -64,3 +66,5 @@ public:
      */
     virtual ~Classifier() {}
 };
+#endif
+

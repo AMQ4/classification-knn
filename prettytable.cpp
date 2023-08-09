@@ -1,27 +1,21 @@
-#include <iostream>
-#include <iomanip>
-#include <string>
-#include <vector>
+#include "prettytable.h"
 
-class PrettyTable
+PrettyTable::PrettyTable(const vector<string> &headers):headers{headers}{}
+
+void PrettyTable::add_row(const vector<string>& row)
 {
-public:
-    PrettyTable(const std::vector<std::string> &headers) : headers(headers) {}
+    data.push_back(row);
+}
 
-    void add_row(const std::vector<std::string> &row)
-    {
-        data.push_back(row);
-    }
-
-    void display()
-    {
-        if (headers.empty() || data.empty())
+void PrettyTable::display()const
+{
+           if (headers.empty() || data.empty())
         {
-            std::cout << "Table is empty." << std::endl;
+            cout << "Table is empty." << endl;
             return;
         }
 
-        std::vector<size_t> columnWidths(headers.size(), 0);
+        vector<size_t> columnWidths(headers.size(), 0);
 
         // Calculate column widths based on headers and data
         for (size_t i = 0; i < headers.size(); ++i)
@@ -39,41 +33,37 @@ public:
         // Display headers
         for (size_t i = 0; i < headers.size(); ++i)
         {
-            std::cout << std::setw(columnWidths[i]) << std::left << headers[i];
+            cout << setw(columnWidths[i]) << left << headers[i];
             if (i < headers.size() - 1)
             {
-                std::cout << " | ";
+                cout << " | ";
             }
         }
-        std::cout << std::endl;
+        cout << endl;
 
         // Display separator
         for (size_t i = 0; i < headers.size(); ++i)
         {
-            std::cout << std::string(columnWidths[i], '-') << " ";
+            cout << string(columnWidths[i], '-') << " ";
             if (i < headers.size() - 1)
             {
-                std::cout << "+ ";
+                cout << "+ ";
             }
         }
-        std::cout << std::endl;
+        cout << endl;
 
         // Display data rows
         for (const auto &row : data)
         {
             for (size_t i = 0; i < row.size(); ++i)
             {
-                std::cout << std::setw(columnWidths[i]) << std::left << row[i];
+                cout << setw(columnWidths[i]) << left << row[i];
                 if (i < row.size() - 1)
                 {
-                    std::cout << " | ";
+                    cout << " | ";
                 }
             }
-            std::cout << std::endl;
+            cout << endl;
         }
-    }
+}
 
-private:
-    std::vector<std::string> headers;
-    std::vector<std::vector<std::string>> data;
-};

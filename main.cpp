@@ -1,13 +1,17 @@
 #include "KNN.cpp"
+
 using namespace std;
 using dataType = Dataset::DataType;
 int main()
 {
-    Dataset mum("./data/Breast Cancer Wisconsin.csv"), train, test;
-    mum.split(train, test);
-    train.set_label("diagnosis");
-    
-    KNN knn(train, 115);
-    knn.evaluate(test);
-    
+KNN knn("./data/iris.csv", "species", 1);
+
+    //vector<Dataset::DataType> x = {4.8,3.0,1.4,0.1,"Iris-setosa"};
+    auto x = knn.get_dataset().iterrow(0);
+    for (auto &&i : x)
+    {
+        cout << i << ", ";
+    }
+cout << endl;    
+    cout << knn.predict(x);
 }
