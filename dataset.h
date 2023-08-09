@@ -257,7 +257,7 @@ public:
      */
     void to_csv(const string &path);
 
-    bool is_normalized(const vector<DataType>& data_point)const;
+    bool is_normalized(const vector<DataType>& data_point);
 
 private:
     unordered_map<string, vector<DataType>> m;            /**< Map storing attribute values for the dataset. */
