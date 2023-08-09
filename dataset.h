@@ -43,8 +43,8 @@ public:
      * If not provided, a default renormalization function is used.
      */
     Dataset(
-        void (*normalizarion_function)(Dataset *)= [](Dataset *self)
-    {
+        void (*normalizarion_function)(Dataset *) = [](Dataset *self)
+        {
                 for (size_t i = 0; i < self->keys.size(); i++)
                 {
                     if (self->_is_numeric[i])
@@ -67,8 +67,8 @@ public:
                         }
                     }
                 } },
-        void (*renormalize_function)(Dataset *, vector<DataType> &)= [](Dataset *self, vector<DataType> &data_point)
-    {
+        void (*renormalize_function)(Dataset *, vector<DataType> &) = [](Dataset *self, vector<DataType> &data_point)
+        {
             for (size_t i = 0; i < data_point.size(); i++)
             {
                 if (self->_is_numeric[i])
@@ -257,7 +257,15 @@ public:
      */
     void to_csv(const string &path);
 
-    bool is_normalized(const vector<DataType>& data_point);
+    /**
+     * @brief Checks if a given data point is normalized within the specified bounds.
+     *
+     * This function checks if a given data point is within the normalized bounds for each numeric attribute.
+     *
+     * @param data_point The data point to check for normalization.
+     * @return true if the data point is normalized, false otherwise.
+     */
+    bool is_normalized(const vector<DataType> &data_point);
 
 private:
     unordered_map<string, vector<DataType>> m;            /**< Map storing attribute values for the dataset. */
