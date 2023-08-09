@@ -1,0 +1,3 @@
+g++ -g -c main.cpp -o main
+g++ -o run  main dataset KNN prettytable -lboost_iostreams -lboost_system
+
