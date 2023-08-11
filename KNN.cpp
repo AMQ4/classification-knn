@@ -197,6 +197,16 @@ Dataset &KNN::get_dataset()
     return dataset;
 }
 
+void KNN::set_k(unsigned int k)
+{
+    _k = k;
+}
+
+unsigned int KNN::get_k()const
+{
+    return _k;
+}
+
 void KNN::saveModel(const string&)
 {
 }

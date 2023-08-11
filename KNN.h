@@ -52,7 +52,7 @@ public:
      * @param proximity_measure The proximity measure function (default is Euclidean distance).
      */
     KNN(
-        const string &path, const string &label, int k=1,
+        const string &path, const string &label, int k = 1,
         double (*proximity_measure)(Dataset *, const vector<Dataset::DataType> &, const vector<Dataset::DataType> &) = euclidean_distance_mesure);
     /**
      * @brief Construct a KNN classifier using the specified training dataset and parameters.
@@ -93,7 +93,7 @@ public:
      */
     vector<pair<double, int>> first_knn(
         const vector<Dataset::DataType> &target, bool (*comparison_fn)(double, double) = [](double a, double b)
-                                             { return a <= b; });
+                                                 { return a <= b; });
 
     /**
      * @brief Sets the dataset for the KNN classifier.
@@ -109,6 +109,22 @@ public:
      * @return A reference to the Dataset object.
      */
     Dataset &get_dataset();
+
+    /**
+     * @brief Get the value of k.
+     *
+     * This function returns the current value of k.
+     *
+     * @return The value of k.
+     */
+    unsigned int get_k() const;
+
+    /**
+     * @brief Set the value of k.
+     *
+     * @param k The new value to set for k.
+     */
+    void set_k(unsigned int k);
 
 private:
     unsigned int _k;                                                                                               /**< The number of nearest neighbors to consider. */
