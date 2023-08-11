@@ -80,9 +80,17 @@ Dataset::DataType KNN::predict(const vector<Dataset::DataType> &sample)
         weights[dataset.iterrow(i.second)[l]] += exp(-i.first) / sum;
     }
 
-    return (*max_element(weights.begin(), weights.end(), [](const pair<Dataset::DataType, double> &a, const pair<Dataset::DataType, double> &b)
-                         { return a.second > b.second; }))
-        .first;
+    pair<Dataset::DataType, double>  max_element = *weights.begin();
+
+    for (auto &&i : weights)
+    {
+        if(i.second > max_element.second)
+        {
+            max_element = i;
+        }
+    }
+    
+    return max_element.first;
 }
 
 unordered_map<Dataset::DataType, unordered_map<Dataset::DataType, int>> KNN::evaluate(Dataset &testData)
