@@ -353,14 +353,15 @@ void Dataset::split(Dataset &train, Dataset &test, double ratio)
     random_shuffle(indicies.begin(), indicies.end());
     unsigned long long _ = ratio * _size;
     size_t i = 0;
+    
     for (; i < _; i++)
     {
-        train.push_back(iterrow(i));
+        train.push_back(iterrow(indicies[i]));
     }
 
     for (; i < _size; ++i)
     {
-        test.push_back(iterrow(i));
+        test.push_back(iterrow(indicies[i]));
     }
 }
 
